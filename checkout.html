@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - 3DPrintNow</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-cube"></i>
+            3DPrint<span>Now</span>
+        </div>
+        <p class="tagline">Complete your 3D printing order</p>
+        
+        <nav>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="upload.html"><i class="fas fa-upload"></i> Upload & Quote</a></li>
+                <li><a href="tracking.html"><i class="fas fa-shipping-fast"></i> Track Order</a></li>
+                <li><a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <h1 class="page-title"><i class="fas fa-shopping-cart"></i> Checkout</h1>
+        
+        <div id="orderSummary" class="card" style="display: none;">
+            <h3><i class="fas fa-receipt"></i> Order Summary</h3>
+            <div id="orderDetails">
+                <!-- Order details will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <div id="noOrderMessage" class="card" style="text-align: center; padding: 3rem;">
+            <div class="upload-icon" style="font-size: 4rem; color: #ccc;">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <h3>No Order Found</h3>
+            <p>You need to create an order first before proceeding to checkout.</p>
+            <a href="upload.html" class="btn" style="margin-top: 1.5rem;">
+                <i class="fas fa-arrow-left"></i> Back to Upload Page
+            </a>
+        </div>
+        
+        <!-- Checkout Form (hidden initially) -->
+        <div id="checkoutForm" style="display: none;">
+            <!-- Contact Information -->
+            <div class="card">
+                <h3><i class="fas fa-user"></i> Contact Information</h3>
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" class="form-control" placeholder="John Smith" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" class="form-control" placeholder="john@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" class="form-control" placeholder="+40 123 456 789">
+                </div>
+            </div>
+            
+            <!-- Shipping Address -->
+            <div class="card">
+                <h3><i class="fas fa-truck"></i> Shipping Address</h3>
+                <div class="form-group">
+                    <label for="address">Street Address *</label>
+                    <input type="text" id="address" class="form-control" placeholder="123 Main Street" required>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="city">City *</label>
+                        <input type="text" id="city" class="form-control" placeholder="Bucharest" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="zip">ZIP Code *</label>
+                        <input type="text" id="zip" class="form-control" placeholder="123456" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="country">Country *</label>
+                    <select id="country" class="form-control" required>
+                        <option value="">Select Country</option>
+                        <option value="Romania" selected>Romania</option>
+                        <option value="United States">United States</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Germany">Germany</option>
+                        <option value="France">France</option>
+                        <option value="Italy">Italy</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Payment Information -->
+            <div class="card">
+                <h3><i class="fas fa-credit-card"></i> Payment Information</h3>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> This is a demo. No real payment will be processed.
+                </div>
+                
+                <div class="form-group">
+                    <label for="cardNumber">Card Number</label>
+                    <input type="text" id="cardNumber" class="form-control" placeholder="4242 4242 4242 4242" value="4242424242424242">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="expiry">Expiry Date (MM/YY)</label>
+                        <input type="text" id="expiry" class="form-control" placeholder="12/26" value="12/26">
+                    </div>
+                    <div class="form-group">
+                        <label for="cvc">CVC</label>
+                        <input type="text" id="cvc" class="form-control" placeholder="123" value="123">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cardName">Name on Card</label>
+                    <input type="text" id="cardName" class="form-control" placeholder="John Smith">
+                </div>
+            </div>
+            
+            <!-- Terms & Submit -->
+            <div class="card">
+                <div class="form-group">
+                    <label style="display: flex; align-items: flex-start; gap: 0.5rem;">
+                        <input type="checkbox" id="terms" required style="margin-top: 0.3rem;">
+                        <span>
+                            I agree to the <a href="#" style="color: var(--turquoise);">Terms of Service</a> and 
+                            <a href="#" style="color: var(--turquoise);">Privacy Policy</a>. I understand this is a demo 
+                            and no real payment will be processed.
+                        </span>
+                    </label>
+                </div>
+                
+                <div id="errorMessage" class="alert alert-error" style="display: none;"></div>
+                
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button id="submitOrderBtn" class="btn" style="font-size: 1.2rem; padding: 1.2rem 3rem;">
+                        <i class="fas fa-lock"></i> Place Order & Generate Tracking
+                    </button>
+                    <p style="margin-top: 1rem; font-size: 0.9rem; color: #888;">
+                        <i class="fas fa-shield-alt"></i> Secure order processing
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Order Confirmation (hidden initially) -->
+        <div id="orderConfirmation" class="card" style="display: none; text-align: center; padding: 3rem;">
+            <div style="font-size: 5rem; color: var(--turquoise); margin-bottom: 1.5rem;">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Order Confirmed!</h2>
+            <p style="font-size: 1.2rem; margin: 1.5rem 0;">
+                Thank you for your order. Your 3D print is now in production.
+            </p>
+            
+            <div style="background: rgba(78, 205, 196, 0.1); padding: 2rem; border-radius: 12px; max-width: 500px; margin: 2rem auto;">
+                <h4 style="color: var(--deep-teal);">Your Order ID</h4>
+                <div id="orderIdDisplay" style="font-size: 2.5rem; font-weight: bold; color: var(--coral-red); margin: 1rem 0;">
+                    ORD-1001
+                </div>
+                <p style="color: #666;">
+                    <i class="fas fa-info-circle"></i> Save this ID to track your order status
+                </p>
+            </div>
+            
+            <div style="margin: 2rem 0;">
+                <h4>What's Next?</h4>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                    <div style="padding: 1rem; background: rgba(255, 107, 107, 0.05); border-radius: 8px;">
+                        <div style="font-size: 2rem; color: var(--coral-red); margin-bottom: 0.5rem;">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h5>Order Processing</h5>
+                        <p>We'll review your STL file</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(78, 205, 196, 0.05); border-radius: 8px;">
+                        <div style="font-size: 2rem; color: var(--turquoise); margin-bottom: 0.5rem;">
+                            <i class="fas fa-print"></i>
+                        </div>
+                        <h5>3D Printing</h5>
+                        <p>Your model will be printed</p>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(255, 209, 102, 0.05); border-radius: 8px;">
+                        <div style="font-size: 2rem; color: var(--sunshine-yellow); margin-bottom: 0.5rem;">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <h5>Shipping</h5>
+                        <p>Package and ship to you</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 2rem;">
+                <button id="trackOrderBtn" class="btn" style="margin-right: 1rem;">
+                    <i class="fas fa-search"></i> Track This Order
+                </button>
+                <a href="index.html" class="btn btn-outline">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+            </div>
+            
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #eee;">
+                <p style="color: #666;">
+                    <i class="fas fa-envelope"></i> You'll receive an order confirmation email shortly.
+                    For any questions, contact us at <strong>support@3dprintnow.com</strong>
+                </p>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p><i class="fas fa-cube"></i> <strong>3DPrintNow</strong> - Professional 3D Printing Service</p>
+        <p style="margin-top: 0.5rem; color: #888; font-size: 0.9rem;">
+            &copy; 2026 3DPrintNow. All rights reserved. | Secure checkout powered by demo system
+        </p>
+    </footer>
+    
+    <script>
+        // State
+        let currentOrder = null;
+        let orderId = null;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load order from localStorage
+            const orderData = localStorage.getItem('currentOrder');
+            
+            if (orderData) {
+                currentOrder = JSON.parse(orderData);
+                showOrderSummary();
+                showCheckoutForm();
+            } else {
+                showNoOrderMessage();
+            }
+            
+            // Setup event listeners
+            setupEventListeners();
+        });
+        
+        // Show order summary
+        function showOrderSummary() {
+            const orderDetails = document.getElementById('orderDetails');
+            const material = getMaterialById(currentOrder.materialId);
+            
+            orderDetails.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1rem 0;">
+                    <div style="padding: 1rem; background: rgba(78, 205, 196, 0.05); border-radius: 8px;">
+                        <div style="font-size: 0.9rem; color: #666;">File</div>
+                        <div style="font-weight: bold;">${currentOrder.fileName}</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(255, 107, 107, 0.05); border-radius: 8px;">
+                        <div style="font-size: 0.9rem; color: #666;">Material</div>
+                        <div style="font-weight: bold;">${currentOrder.material}</div>
+                    </div>
+                    <div style="padding: 1rem; background: rgba(255, 209, 102, 0.05); border-radius: 8px;">
+                        <div style="font-size: 0.9rem; color: #666;">Quantity</div>
+                        <div style="font-weight: bold;">${currentOrder.quantity}</div>
+                    </div>
+                </div>
+                <div style="margin-top: 1.5rem; padding: 1.5rem; background: linear-gradient(135deg, var(--sunshine-yellow), #FFE082); border-radius: 12px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-size: 0.9rem; color: var(--deep-teal);">Total Price</div>
+                            <div style="font-size: 2.5rem; font-weight: bold; color: var(--coral-red);">$${currentOrder.price.toFixed(2)}</div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 0.9rem; color: var(--deep-teal);">Volume</div>
+                            <div style="font-size: 1.2rem; font-weight: bold;">${currentOrder.volume.toFixed(2)} cm³</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('orderSummary').style.display = 'block';
+        }
+        
+        // Show no order message
+        function showNoOrderMessage() {
+            document.getElementById('noOrderMessage').style.display = 'block';
+        }
+        
+        // Show checkout form
+        function showCheckoutForm() {
+            document.getElementById('noOrderMessage').style.display = 'none';
+            document.getElementById('checkoutForm').style.display = 'block';
+        }
+        
+        // Show order confirmation
+        function showOrderConfirmation() {
+            document.getElementById('checkoutForm').style.display = 'none';
+            document.getElementById('orderConfirmation').style.display = 'block';
+        }
+        
+        // Get material by ID
+        function getMaterialById(id) {
+            const materials = [
+                { id: 'pla', name: 'PLA', pricePerCm3: 0.25, color: '#FF6B6B' },
+                { id: 'abs', name: 'ABS', pricePerCm3: 0.35, color: '#4ECDC4' },
+                { id: 'petg', name: 'PETG', pricePerCm3: 0.40, color: '#FFD166' },
+                { id: 'resin', name: 'Resin', pricePerCm3: 0.80, color: '#1A535C' },
+                { id: 'tpu', name: 'TPU', pricePerCm3: 0.45, color: '#9B5DE5' },
+                { id: 'nylon', name: 'Nylon', pricePerCm3: 0.55, color: '#00BBF9' }
+            ];
+            
+            return materials.find(m => m.id === id) || materials[0];
+        }
+        
+        // Generate order ID
+        function generateOrderId() {
+            const timestamp = Date.now().toString().slice(-6);
+            const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+            return `ORD-${timestamp}${random}`;
+        }
+        
+        // Validate form
+        function validateForm() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const zip = document.getElementById('zip').value.trim();
+            const country = document.getElementById('country').value;
+            const terms = document.getElementById('terms').checked;
+            
+            if (!name) return 'Please enter your full name';
+            if (!email) return 'Please enter your email address';
+            if (!address) return 'Please enter your shipping address';
+            if (!city) return 'Please enter your city';
+            if (!zip) return 'Please enter your ZIP code';
+            if (!country) return 'Please select your country';
+            if (!terms) return 'Please agree to the terms and conditions';
+            
+            // Simple email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) return 'Please enter a valid email address';
+            
+            return null; // No errors
+        }
+        
+        // Submit order
+        function submitOrder() {
+            const error = validateForm();
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (error) {
+                errorMessage.textContent = error;
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            errorMessage.style.display = 'none';
+            
+            // Generate order ID
+            orderId = generateOrderId();
+            
+            // Collect form data
+            const orderData = {
+                ...currentOrder,
+                orderId: orderId,
+                customerName: document.getElementById('name').value.trim(),
+                customerEmail: document.getElementById('email').value.trim(),
+                customerPhone: document.getElementById('phone').value.trim(),
+                shippingAddress: document.getElementById('address').value.trim(),
+                shippingCity: document.getElementById('city').value.trim(),
+                shippingZip: document.getElementById('zip').value.trim(),
+                shippingCountry: document.getElementById('country').value,
+                orderDate: new Date().toISOString(),
+                status: 'pending'
+            };
+            
+            // Save to localStorage (in real app, this would go to backend)
+            saveOrderToStorage(orderData);
+            
+            // Clear current order from localStorage
+            localStorage.removeItem('currentOrder');
+            
+            // Update UI
+            document.getElementById('orderIdDisplay').textContent = orderId;
+            showOrderConfirmation();
+            
+            // Setup track order button
+            document.getElementById('trackOrderBtn').onclick = () => {
+                window.location.href = `tracking.html?order=${orderId}`;
+            };
+        }
+        
+        // Save order to localStorage (mock database)
+        function saveOrderToStorage(orderData) {
+            // Get existing orders
+            let orders = JSON.parse(localStorage.getItem('3dprintnow_orders') || '[]');
+            
+            // Add new order
+            orders.push(orderData);
+            
+            // Save back to localStorage
+            localStorage.setItem('3dprintnow_orders', JSON.stringify(orders));
+            
+            // Also save for admin access
+            localStorage.setItem('admin_orders', JSON.stringify(orders));
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Submit order button
+            document.getElementById('submitOrderBtn').addEventListener('click', submitOrder);
+            
+            // Auto-fill form for demo
+            document.getElementById('name').value = 'John Smith';
+            document.getElementById('email').value = 'john@example.com';
+            document.getElementById('phone').value = '+40 123 456 789';
+            document.getElementById('address').value = '123 Main Street';
+            document.getElementById('city').value = 'Bucharest';
+            document.getElementById('zip').value = '123456';
+            document.getElementById('cardName').value = 'John Smith';
+        }
+    </script>
+</body>
+</html>

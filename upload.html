@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload & Get Quote - 3DPrintNow</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-cube"></i>
+            3DPrint<span>Now</span>
+        </div>
+        <p class="tagline">Upload your 3D model for an instant quote!</p>
+        
+        <nav>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="upload.html" class="active"><i class="fas fa-upload"></i> Upload & Quote</a></li>
+                <li><a href="tracking.html"><i class="fas fa-shipping-fast"></i> Track Order</a></li>
+                <li><a href="admin.html"><i class="fas fa-user-shield"></i> Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <h1 class="page-title"><i class="fas fa-calculator"></i> Get Your Instant Quote</h1>
+        
+        <div class="alert alert-info">
+            <i class="fas fa-lightbulb"></i> <strong>Tip:</strong> Upload your STL file, choose material, and see the price instantly!
+        </div>
+        
+        <!-- Upload Section -->
+        <div class="card">
+            <h3><i class="fas fa-file-upload"></i> Step 1: Upload Your 3D Model</h3>
+            <p>Supported format: <strong>.stl</strong> (max 50MB)</p>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h3 id="uploadText">Drag & Drop your STL file here</h3>
+                <p id="fileInfo">or click to browse files</p>
+                <input type="file" id="fileInput" accept=".stl" style="display: none;">
+                <button class="btn btn-teal" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-folder-open"></i> Browse Files
+                </button>
+            </div>
+            
+            <div id="fileDetails" style="display: none; margin-top: 1.5rem;">
+                <div style="background: rgba(78, 205, 196, 0.1); padding: 1rem; border-radius: 8px;">
+                    <h4><i class="fas fa-file"></i> File Details</h4>
+                    <p><strong>Filename:</strong> <span id="fileName">-</span></p>
+                    <p><strong>Size:</strong> <span id="fileSize">-</span></p>
+                    <p><strong>Estimated Volume:</strong> <span id="fileVolume">-</span> cm³</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Material Selection -->
+        <div class="card">
+            <h3><i class="fas fa-palette"></i> Step 2: Choose Material</h3>
+            <p>Select your preferred printing material:</p>
+            
+            <div class="materials-grid" id="materialsGrid">
+                <!-- Materials will be populated by JavaScript -->
+            </div>
+            
+            <div style="margin-top: 1.5rem;">
+                <label for="quantity" style="display: block; margin-bottom: 0.5rem;">
+                    <i class="fas fa-copy"></i> Quantity
+                </label>
+                <select id="quantity" class="form-control" style="max-width: 200px;">
+                    <option value="1">1 copy</option>
+                    <option value="2">2 copies</option>
+                    <option value="3">3 copies</option>
+                    <option value="5">5 copies</option>
+                    <option value="10">10 copies</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Price Quote -->
+        <div class="card">
+            <h3><i class="fas fa-dollar-sign"></i> Step 3: Your Instant Quote</h3>
+            <p>Price calculated based on material and estimated volume:</p>
+            
+            <div id="priceDisplay" class="price-display" style="display: none;">
+                <h4>Estimated Price</h4>
+                <div class="price-amount" id="priceAmount">$0.00</div>
+                <p id="priceBreakdown">-</p>
+                <p style="font-size: 0.9rem; color: #666; margin-top: 1rem;">
+                    <i class="fas fa-info-circle"></i> Price includes VAT. Shipping calculated at checkout.
+                </p>
+            </div>
+            
+            <div id="noFileMessage" style="text-align: center; padding: 2rem;">
+                <div class="upload-icon" style="font-size: 3rem; color: #ccc;">
+                    <i class="fas fa-cube"></i>
+                </div>
+                <h4>Upload a file to see your quote</h4>
+                <p>Select an STL file and material to calculate the price</p>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <button id="proceedBtn" class="btn" style="font-size: 1.2rem; padding: 1.2rem 3rem;" disabled>
+                    <i class="fas fa-shopping-cart"></i> Proceed to Checkout
+                </button>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: #888;">
+                    <i class="fas fa-lock"></i> Secure checkout with mock payment
+                </p>
+            </div>
+        </div>
+        
+        <!-- FAQ -->
+        <div class="card">
+            <h3><i class="fas fa-question-circle"></i> Frequently Asked Questions</h3>
+            <div style="margin-top: 1rem;">
+                <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">
+                    <h4 style="color: var(--coral-red);">How is the price calculated?</h4>
+                    <p>Price = Base fee ($5) + (Material rate × Estimated volume). Volume is estimated from file size.</p>
+                </div>
+                <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #eee;">
+                    <h4 style="color: var(--turquoise);">What file formats do you accept?</h4>
+                    <p>We accept <strong>.stl</strong> files only. Maximum file size is 50MB.</p>
+                </div>
+                <div>
+                    <h4 style="color: var(--sunshine-yellow);">How long does printing take?</h4>
+                    <p>Typically 5-7 business days from order confirmation to delivery.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p><i class="fas fa-cube"></i> <strong>3DPrintNow</strong> - Professional 3D Printing Service</p>
+        <p style="margin-top: 0.5rem; color: #888; font-size: 0.9rem;">
+            &copy; 2026 3DPrintNow. All rights reserved. | Need help? Contact us at hello@3dprintnow.com
+        </p>
+    </footer>
+    
+    <script>
+        // Materials data
+        const materials = [
+            { id: 'pla', name: 'PLA', pricePerCm3: 0.25, color: '#FF6B6B', icon: 'fas fa-leaf', description: 'Biodegradable, colorful, easy to print' },
+            { id: 'abs', name: 'ABS', pricePerCm3: 0.35, color: '#4ECDC4', icon: 'fas fa-fire', description: 'Durable, heat-resistant, strong' },
+            { id: 'petg', name: 'PETG', pricePerCm3: 0.40, color: '#FFD166', icon: 'fas fa-wine-bottle', description: 'Strong, flexible, food-safe' },
+            { id: 'resin', name: 'Resin', pricePerCm3: 0.80, color: '#1A535C', icon: 'fas fa-vial', description: 'High detail, smooth finish' },
+            { id: 'tpu', name: 'TPU', pricePerCm3: 0.45, color: '#9B5DE5', icon: 'fas fa-basketball-ball', description: 'Flexible, rubber-like' },
+            { id: 'nylon', name: 'Nylon', pricePerCm3: 0.55, color: '#00BBF9', icon: 'fas fa-cogs', description: 'Very strong, mechanical parts' }
+        ];
+        
+        // State
+        let selectedFile = null;
+        let selectedMaterial = 'pla';
+        let quantity = 1;
+        let estimatedVolume = 0;
+        
+        // Initialize materials grid
+        function initMaterials() {
+            const grid = document.getElementById('materialsGrid');
+            grid.innerHTML = '';
+            
+            materials.forEach(material => {
+                const card = document.createElement('div');
+                card.className = `material-card ${selectedMaterial === material.id ? 'selected' : ''}`;
+                card.innerHTML = `
+                    <div class="material-icon" style="color: ${material.color};">
+                        <i class="${material.icon}"></i>
+                    </div>
+                    <h4>${material.name}</h4>
+                    <p>$${material.pricePerCm3.toFixed(2)}/cm³</p>
+                    <p class="small">${material.description}</p>
+                `;
+                card.onclick = () => selectMaterial(material.id);
+                grid.appendChild(card);
+            });
+        }
+        
+        // Select material
+        function selectMaterial(materialId) {
+            selectedMaterial = materialId;
+            initMaterials();
+            calculatePrice();
+        }
+        
+        // Handle file upload
+        function setupFileUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const uploadText = document.getElementById('uploadText');
+            const fileInfo = document.getElementById('fileInfo');
+            const fileDetails = document.getElementById('fileDetails');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const fileVolume = document.getElementById('fileVolume');
+            
+            // Drag and drop
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+                uploadText.textContent = 'Drop your STL file here';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+                uploadText.textContent = 'Drag & Drop your STL file here';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                
+                if (e.dataTransfer.files.length > 0) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // File input change
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleFile(e.target.files[0]);
+                }
+            });
+            
+            // Click to upload
+            uploadArea.addEventListener('click', () => {
+                fileInput.click();
+            });
+        }
+        
+        // Handle file selection
+        function handleFile(file) {
+            if (!file.name.toLowerCase().endsWith('.stl')) {
+                alert('Please upload an STL file (.stl extension)');
+                return;
+            }
+            
+            if (file.size > 50 * 1024 * 1024) { // 50MB
+                alert('File too large. Maximum size is 50MB.');
+                return;
+            }
+            
+            selectedFile = file;
+            
+            // Update UI
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            
+            // Estimate volume based on file size (simple mock)
+            estimatedVolume = Math.max(10, file.size / (1024 * 10)); // Simple heuristic
+            document.getElementById('fileVolume').textContent = estimatedVolume.toFixed(2);
+            
+            // Show file details
+            document.getElementById('fileDetails').style.display = 'block';
+            
+            // Update upload area
+            document.getElementById('uploadText').textContent = 'File uploaded!';
+            document.getElementById('fileInfo').textContent = `${file.name} (${formatFileSize(file.size)})`;
+            
+            // Calculate price
+            calculatePrice();
+        }
+        
+        // Calculate price
+        function calculatePrice() {
+            if (!selectedFile) {
+                document.getElementById('priceDisplay').style.display = 'none';
+                document.getElementById('noFileMessage').style.display = 'block';
+                document.getElementById('proceedBtn').disabled = true;
+                return;
+            }
+            
+            const material = materials.find(m => m.id === selectedMaterial);
+            quantity = parseInt(document.getElementById('quantity').value);
+            
+            const baseFee = 5.00;
+            const materialCost = estimatedVolume * material.pricePerCm3;
+            const total = (baseFee + materialCost) * quantity;
+            
+            // Update price display
+            document.getElementById('priceAmount').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('priceBreakdown').innerHTML = `
+                <small>
+                    Base fee: $${baseFee.toFixed(2)} + 
+                    Material (${estimatedVolume.toFixed(2)}cm³ × $${material.pricePerCm3.toFixed(2)}): $${materialCost.toFixed(2)}
+                    ${quantity > 1 ? `× ${quantity} copies` : ''}
+                </small>
+            `;
+            
+            // Show price display
+            document.getElementById('priceDisplay').style.display = 'block';
+            document.getElementById('noFileMessage').style.display = 'none';
+            document.getElementById('proceedBtn').disabled = false;
+            
+            // Update button
+            const proceedBtn = document.getElementById('proceedBtn');
+            proceedBtn.onclick = () => proceedToCheckout(total);
+        }
+        
+        // Proceed to checkout
+        function proceedToCheckout(total) {
+            if (!selectedFile) {
+                alert('Please upload a file first');
+                return;
+            }
+            
+            // Save order data to localStorage for checkout page
+            const material = materials.find(m => m.id === selectedMaterial);
+            const orderData = {
+                fileName: selectedFile.name,
+                fileSize: selectedFile.size,
+                material: material.name,
+                materialId: material.id,
+                volume: estimatedVolume,
+                quantity: quantity,
+                price: total,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('currentOrder', JSON.stringify(orderData));
+            
+            // Redirect to checkout
+            window.location.href = 'checkout.html';
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' bytes';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initMaterials();
+            setupFileUpload();
+            
+            // Quantity change listener
+            document.getElementById('quantity').addEventListener('change', calculatePrice);
+            
+            // Set default material
+            selectMaterial('pla');
+        });
+    </script>
+</body>
+</html>

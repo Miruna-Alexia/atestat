@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - 3DPrintNow</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-cube"></i>
+            3DPrint<span>Now</span>
+        </div>
+        <p class="tagline">Admin Dashboard - Manage 3D Printing Orders</p>
+        
+        <nav>
+            <ul>
+                <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="upload.html"><i class="fas fa-upload"></i> Upload & Quote</a></li>
+                <li><a href="tracking.html"><i class="fas fa-shipping-fast"></i> Track Order</a></li>
+                <li><a href="admin.html" class="active"><i class="fas fa-user-shield"></i> Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <div id="loginForm">
+            <div class="card" style="max-width: 500px; margin: 3rem auto; text-align: center;">
+                <div style="font-size: 4rem; color: var(--turquoise); margin-bottom: 1.5rem;">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                
+                <h2>Admin Login</h2>
+                <p style="color: #666; margin-bottom: 2rem;">
+                    Access the admin dashboard to manage 3D printing orders
+                </p>
+                
+                <div class="form-group">
+                    <label for="adminEmail">Email Address</label>
+                    <input type="email" id="adminEmail" class="form-control" placeholder="admin@3dprintnow.com" value="admin@3dprintnow.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" class="form-control" placeholder="Enter password" value="admin123">
+                </div>
+                
+                <div id="loginError" class="alert alert-error" style="display: none; margin: 1.5rem 0;"></div>
+                
+                <button id="loginBtn" class="btn" style="width: 100%; padding: 1.2rem; font-size: 1.1rem;">
+                    <i class="fas fa-sign-in-alt"></i> Sign In to Dashboard
+                </button>
+                
+                <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #eee;">
+                    <p style="color: #888; font-size: 0.9rem;">
+                        <i class="fas fa-info-circle"></i> Demo credentials: admin@3dprintnow.com / admin123
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="adminDashboard" style="display: none;">
+            <h1 class="page-title"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h1>
+            
+            <!-- Stats Overview -->
+            <div class="card">
+                <h3><i class="fas fa-chart-bar"></i> Order Statistics</h3>
+                <div id="statsOverview" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                    <!-- Stats will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Order Filters -->
+            <div class="card">
+                <h3><i class="fas fa-filter"></i> Filter Orders</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                    <div>
+                        <label for="filterStatus">Status</label>
+                        <select id="filterStatus" class="form-control">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="printing">Printing</option>
+                            <option value="shipping">Shipping</option>
+                            <option value="delivered">Delivered</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filterMaterial">Material</label>
+                        <select id="filterMaterial" class="form-control">
+                            <option value="">All Materials</option>
+                            <option value="PLA">PLA</option>
+                            <option value="ABS">ABS</option>
+                            <option value="PETG">PETG</option>
+                            <option value="Resin">Resin</option>
+                            <option value="TPU">TPU</option>
+                            <option value="Nylon">Nylon</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="filterSearch">Search</label>
+                        <input type="text" id="filterSearch" class="form-control" placeholder="Order ID, customer, email...">
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button id="applyFilters" class="btn btn-teal" style="width: 100%;">
+                            <i class="fas fa-search"></i> Apply Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Orders Table -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3><i class="fas fa-list"></i> Orders</h3>
+                    <div>
+                        <button id="refreshOrders" class="btn btn-outline" style="margin-right: 0.5rem;">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button id="logoutBtn" class="btn">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="ordersTable">
+                    <!-- Orders will be populated by JavaScript -->
+                </div>
+                
+                <div id="noOrdersMessage" style="text-align: center; padding: 3rem; display: none;">
+                    <div style="font-size: 4rem; color: #ccc; margin-bottom: 1rem;">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h4>No Orders Found</h4>
+                    <p>No orders match your current filters.</p>
+                </div>
+            </div>
+            
+            <!-- Order Details Modal -->
+            <div id="orderModal" class="card" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; z-index: 1000; background: white; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3><i class="fas fa-file-alt"></i> Order Details</h3>
+                    <button id="closeModal" style="background: none; border: none; font-size: 1.5rem; color: #666; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div id="modalContent">
+                    <!-- Order details will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div id="modalOverlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999;"></div>
+        </div>
+    </main>
+    
+    <footer>
+        <p><i class="fas fa-cube"></i> <strong>3DPrintNow</strong> - Professional 3D Printing Service</p>
+        <p style="margin-top: 0.5rem; color: #888; font-size: 0.9rem;">
+            &copy; 2026 3DPrintNow. All rights reserved. | Admin Dashboard v1.0
+        </p>
+    </footer>
+    
+    <script>
+        // Admin credentials
+        const ADMIN_EMAIL = 'admin@3dprintnow.com';
+        const ADMIN_PASSWORD = 'admin123';
+        
+        // State
+        let isAuthenticated = false;
+        let orders = [];
+        let filteredOrders = [];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if already logged in
+            const adminToken = localStorage.getItem('admin_token');
+            if (adminToken === 'admin_authenticated') {
+                isAuthenticated = true;
+                showDashboard();
+                loadOrders();
+            } else {
+                showLoginForm();
+            }
+            
+            // Setup event listeners
+            setupEventListeners();
+        });
+        
+        // Show login form
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('adminDashboard').style.display = 'none';
+        }
+        
+        // Show dashboard
+        function showDashboard() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('adminDashboard').style.display = 'block';
+        }
+        
+        // Setup event listeners
+        function setupEventListeners() {
+            // Login button
+            document.getElementById('loginBtn').addEventListener('click', handleLogin);
+            
+            // Allow Enter key to login
+            document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleLogin();
+                }
+            });
+            
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            
+            // Filter buttons
+            document.getElementById('applyFilters').addEventListener('click', applyFilters);
+            document.getElementById('refreshOrders').addEventListener('click', loadOrders);
+            
+            // Close modal
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('modalOverlay').addEventListener('click', closeModal);
+            
+            // Filter inputs (apply on change)
+            document.getElementById('filterStatus').addEventListener('change', applyFilters);
+            document.getElementById('filterMaterial').addEventListener('change', applyFilters);
+            document.getElementById('filterSearch').addEventListener('input', function() {
+                // Debounce search
+                clearTimeout(this.searchTimeout);
+                this.searchTimeout = setTimeout(applyFilters, 300);
+            });
+        }
+        
+        // Handle login
+        function handleLogin() {
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value.trim();
+            const errorEl = document.getElementById('loginError');
+            
+            if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+                // Successful login
+                isAuthenticated = true;
+                localStorage.setItem('admin_token', 'admin_authenticated');
+                showDashboard();
+                loadOrders();
+                errorEl.style.display = 'none';
+            } else {
+                // Failed login
+                errorEl.textContent = 'Invalid email or password. Use admin@3dprintnow.com / admin123';
+                errorEl.style.display = 'block';
+            }
+        }
+        
+        // Handle logout
+        function handleLogout() {
+            isAuthenticated = false;
+            localStorage.removeItem('admin_token');
+            showLoginForm();
+        }
+        
+        // Load orders
+        function loadOrders() {
+            // Get orders from localStorage (mock database)
+            const storedOrders = JSON.parse(localStorage.getItem('admin_orders') || '[]');
+            
+            // If no orders in localStorage, use mock data
+            if (storedOrders.length === 0) {
+                orders = getMockOrders();
+            } else {
+                orders = storedOrders;
+            }
+            
+            // Update stats
+            updateStats();
+            
+            // Apply current filters
+            applyFilters();
+        }
+        
+        // Get mock orders (for demo)
+        function getMockOrders() {
+            return [
+                {
+                    orderId: 'ORD-1001',
+                    customerName: 'John Smith',
+                    customerEmail: 'john@example.com',
+                    fileName: 'gear.stl',
+                    material: 'PLA',
+                    quantity: 2,
+                    volume: 45.2,
+                    price: 23.56,
+                    orderDate: '2024-01-15T10:30:00',
+                    status: 'printing',
+                    shippingAddress: '123 Main St, Bucharest, Romania',
+                    customerPhone: '+40 123 456 789'
+                },
+                {
+                    orderId: 'ORD-1002',
+                    customerName: 'Sarah Johnson',
+                    customerEmail: 'sarah@example.com',
+                    fileName: 'bracket.stl',
+                    material: 'ABS',
+                    quantity: 1,
+                    volume: 28.7,
+                    price: 15.05,
+                    orderDate: '2024-01-14T14:20:00',
+                    status: 'shipping',
+                    shippingAddress: '456 Oak Ave, Cluj-Napoca, Romania',
+                    customerPhone: '+40 234 567 890'
+                },
+                {
+                    orderId: 'ORD-1003',
+                    customerName: 'Mike Wilson',
+                    customerEmail: 'mike@example.com',
+                    fileName: 'miniature.stl',
+                    material: 'Resin',
+                    quantity: 3,
+                    volume: 12.5,
+                    price: 35.00,
+                    orderDate: '2024-01-13T09:15:00',
+                    status: 'delivered',
+                    shippingAddress: '789 Pine Rd, Timisoara, Romania',
+                    customerPhone: '+40 345 678 901'
+                },
+                {
+                    orderId: 'ORD-1004',
+                    customerName: 'Emma Davis',
+                    customerEmail: 'emma@example.com',
+                    fileName: 'case.stl',
+                    material: 'TPU',
+                    quantity: 1,
+                    volume: 32.8,
+                    price: 21.40,
+                    orderDate: '2024-01-12T16:45:00',
+                    status: 'processing',
+                    shippingAddress: '101 Maple St, Iasi, Romania',
+                    customerPhone: '+40 456 789 012'
+                },
+                {
+                    orderId: 'ORD-1005',
+                    customerName: 'Robert Brown',
+                    customerEmail: 'robert@example.com',
+                    fileName: 'prototype.stl',
+                    material: 'PETG',
+                    quantity: 1,
+                    volume: 67.3,
+                    price: 31.92,
+                    orderDate: '2024-01-11T11:20:00',
+                    status: 'pending',
+                    shippingAddress: '202 Elm Ave, Constanta, Romania',
+                    customerPhone: '+40 567 890 123'
+                }
+            ];
+        }
+        
+        // Update statistics
+        function updateStats() {
+            const stats = {
+                total: orders.length,
+                pending: orders.filter(o => o.status === 'pending').length,
+                processing: orders.filter(o => o.status === 'processing').length,
+                printing: orders.filter(o => o.status === 'printing').length,
+                shipping: orders.filter(o => o.status === 'shipping').length,
+                delivered: orders.filter(o => o.status === 'delivered').length,
+                revenue: orders.reduce((sum, order) => sum + order.price, 0)
+            };
+            
+            const statsHtml = `
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--deep-teal);">${stats.total}</div>
+                    <div style="font-size: 0.9rem; color: #666;">Total Orders</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--coral-red);">$${stats.revenue.toFixed(2)}</div>
+                    <div style="font-size: 0.9rem; color: #666;">Total Revenue</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--sunshine-yellow);">${stats.pending}</div>
+                    <div style="font-size: 0.9rem; color: #666;">Pending</div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2.5rem; font-weight: bold; color: var(--turquoise);">${stats.printing}</div>
+                    <div style="font-size: 0.9rem; color: #666;">Printing</div>
+                </div>
+            `;
+            
+            document.getElementById('statsOverview').innerHTML = statsHtml;
+        }
+        
+        // Apply filters
+        function applyFilters() {
+            const status = document.getElementById('filterStatus').value;
+            const material = document.getElementById('filterMaterial').value;
+            const search = document.getElementById('filterSearch').value.toLowerCase();
+            
+            filteredOrders = orders.filter(order => {
+                // Status filter
+                if (status && order.status !== status) return false;
+                
+                // Material filter
+                if (material && order.material !== material) return false;
+                
+                // Search filter
+                if (search) {
+                    const searchFields = [
+                        order.orderId,
+                        order.customerName,
+                        order.customerEmail,
+                        order.fileName
+                    ];
+                    
+                    if (!searchFields.some(field => field.toLowerCase().includes(search))) {
+                        return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            displayOrders();
+        }
+        
+        // Display orders
+        function displayOrders() {
+            const ordersTable = document.getElementById('ordersTable');
+            const noOrdersMessage = document.getElementById('noOrdersMessage');
+            
+            if (filteredOrders.length === 0) {
+                ordersTable.innerHTML = '';
+                noOrdersMessage.style.display = 'block';
+                return;
+            }
+            
+            noOrdersMessage.style.display = 'none';
+            
+            let html = `
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #f8f9fa; border-bottom: 2px solid #dee2e6;">
+                                <th style="padding: 1rem; text-align: left;">Order ID</th>
+                                <th style="padding: 1rem; text-align: left;">Customer</th>
+                                <th style="padding: 1rem; text-align: left;">Material</th>
+                                <th style="padding: 1rem; text-align: left;">Price</th>
+                                <th style="padding: 1rem; text-align: left;">Status</th>
+                                <th style="padding: 1rem; text-align: left;">Date</th>
+                                <th style="padding: 1rem; text-align: left;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            filteredOrders.forEach(order => {
+                const statusMap = {
+                    pending: { text: 'Pending', class: 'status-pending' },
+                    processing: { text: 'Processing', class: 'status-processing' },
+                    printing: { text: 'Printing', class: 'status-printing' },
+                    shipping: { text: 'Shipping', class: 'status-shipped' },
+                    delivered: { text: 'Delivered', class: 'status-delivered' }
+                };
+                
+                const status = statusMap[order.status] || statusMap.pending;
+                const orderDate = new Date(order.orderDate).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                html += `
+                    <tr style="border-bottom: 1px solid #eee;">
+                        <td style="padding: 1rem;">
+                            <strong>${order.orderId}</strong>
+                        </td>
+                        <td style="padding: 1rem;">
+                            <div>${order.customerName}</div>
+                            <div style="font-size: 0.9rem; color: #666;">${order.customerEmail}</div>
+                        </td>
+                        <td style="padding: 1rem;">
+                            <div>${order.material}</div>
+                            <div style="font-size: 0.9rem; color: #666;">${order.quantity} × ${order.volume.toFixed(1)}cm³</div>
+                        </td>
+                        <td style="padding: 1rem;">
+                            <strong style="color: var(--coral-red);">$${order.price.toFixed(2)}</strong>
+                        </td>
+                        <td style="padding: 1rem;">
+                            <span class="status-badge ${status.class}">${status.text}</span>
+                        </td>
+                        <td style="padding: 1rem;">
+                            ${orderDate}
+                        </td>
+                        <td style="padding: 1rem;">
+                            <button onclick="viewOrderDetails('${order.orderId}')" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            ordersTable.innerHTML = html;
+        }
+        
+        // View order details
+        function viewOrderDetails(orderId) {
+            const order = orders.find(o => o.orderId === orderId);
+            if (!order) return;
+            
+            const statusMap = {
+                pending: { text: 'Pending', class: 'status-pending' },
+                processing: { text: 'Processing', class: 'status-processing' },
+                printing: { text: 'Printing', class: 'status-printing' },
+                shipping: { text: 'Shipping', class: 'status-shipped' },
+                delivered: { text: 'Delivered', class: 'status-delivered' }
+            };
+            
+            const status = statusMap[order.status] || statusMap.pending;
+            const orderDate = new Date(order.orderDate).toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const modalContent = document.getElementById('modalContent');
+            modalContent.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div style="padding: 1.5rem; background: rgba(78, 205, 196, 0.05); border-radius: 10px;">
+                        <h4 style="color: var(--deep-teal); margin-bottom: 0.5rem;">Order Information</h4>
+                        <p><strong>Order ID:</strong> ${order.orderId}</p>
+                        <p><strong>Date:</strong> ${orderDate}</p>
+                        <p><strong>Status:</strong> <span class="status-badge ${status.class}">${status.text}</span></p>
+                    </div>
+                    
+                    <div style="padding: 1.5rem; background: rgba(255, 107, 107, 0.05); border-radius: 10px;">
+                        <h4 style="color: var(--deep-teal); margin-bottom: 0.5rem;">Customer Information</h4>
+                        <p><strong>Name:</strong> ${order.customerName}</p>
+                        <p><strong>Email:</strong> ${order.customerEmail}</p>
+                        ${order.customerPhone ? `<p><strong>Phone:</strong> ${order.customerPhone}</p>` : ''}
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--deep-teal); margin-bottom: 1rem;">Print Details</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                        <div style="padding: 1rem; border: 1px solid #eee; border-radius: 8px;">
+                            <div style="font-size: 0.9rem; color: #666;">File</div>
+                            <div style="font-weight: bold;">${order.fileName}</div>
+                        </div>
+                        <div style="padding: 1rem; border: 1px solid #eee; border-radius: 8px;">
+                            <div style="font-size: 0.9rem; color: #666;">Material</div>
+                            <div style="font-weight: bold;">${order.material}</div>
+                        </div>
+                        <div style="padding: 1rem; border: 1px solid #eee; border-radius: 8px;">
+                            <div style="font-size: 0.9rem; color: #666;">Quantity</div>
+                            <div style="font-weight: bold;">${order.quantity}</div>
+                        </div>
+                        <div style="padding: 1rem; border: 1px solid #eee; border-radius: 8px;">
+                            <div style="font-size: 0.9rem; color: #666;">Volume</div>
+                            <div style="font-weight: bold;">${order.volume.toFixed(2)} cm³</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--deep-teal); margin-bottom: 1rem;">Price Summary</h4>
+                    <div style="padding: 1.5rem; background: linear-gradient(135deg, var(--sunshine-yellow), #FFE082); border-radius: 12px;">
+                        <div style="font-size: 2.5rem; font-weight: bold; color: var(--coral-red); text-align: center;">
+                            $${order.price.toFixed(2)}
+                        </div>
+                    </div>
+                </div>
+                
+                ${order.shippingAddress ? `
+                <div style="margin-bottom: 2rem;">
+                    <h4 style="color: var(--deep-teal); margin-bottom: 1rem;">Shipping Address</h4>
+                    <div style="padding: 1rem; background: rgba(78, 205, 196, 0.05); border-radius: 8px;">
+                        ${order.shippingAddress}
+                    </div>
+                </div>
+                ` : ''}
+                
+                <div>
+                    <h4 style="color: var(--deep-teal); margin-bottom: 1rem;">Update Status</h4>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <button onclick="updateOrderStatus('${order.orderId}', 'pending')" class="btn ${order.status === 'pending' ? '' : 'btn-outline'}" style="padding: 0.5rem 1rem;">
+                            Pending
+                        </button>
+                        <button onclick="updateOrderStatus('${order.orderId}', 'processing')" class="btn ${order.status === 'processing' ? '' : 'btn-outline'}" style="padding: 0.5rem 1rem;">
+                            Processing
+                        </button>
+                        <button onclick="updateOrderStatus('${order.orderId}', 'printing')" class="btn ${order.status === 'printing' ? '' : 'btn-outline'}" style="padding: 0.5rem 1rem;">
+                            Printing
+                        </button>
+                        <button onclick="updateOrderStatus('${order.orderId}', 'shipping')" class="btn ${order.status === 'shipping' ? '' : 'btn-outline'}" style="padding: 0.5rem 1rem;">
+                            Shipping
+                        </button>
+                        <button onclick="updateOrderStatus('${order.orderId}', 'delivered')" class="btn ${order.status === 'delivered' ? '' : 'btn-outline'}" style="padding: 0.5rem 1rem;">
+                            Delivered
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Show modal
+            document.getElementById('orderModal').style.display = 'block';
+            document.getElementById('modalOverlay').style.display = 'block';
+        }
+        
+        // Update order status
+        function updateOrderStatus(orderId, newStatus) {
+            const orderIndex = orders.findIndex(o => o.orderId === orderId);
+            if (orderIndex === -1) return;
+            
+            // Update order
+            orders[orderIndex].status = newStatus;
+            
+            // Save to localStorage
+            localStorage.setItem('admin_orders', JSON.stringify(orders));
+            
+            // Update UI
+            updateStats();
+            applyFilters();
+            
+            // Close modal
+            closeModal();
+            
+            // Show success message
+            alert(`Order ${orderId} status updated to ${newStatus}`);
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('orderModal').style.display = 'none';
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
